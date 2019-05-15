@@ -1,19 +1,19 @@
 import twitter
 import json
 import os
-CONSUMER_KEY = os.environ["SDD_CONSUMER_KEY"]
-CONSUMER_SECRET = os.environ["SDD_CONSUMER_SECRET"]
-ACCESS_TOKEN = os.environ["SDD_ACCESS_TOKEN"]
-ACCESS_TOKEN_SECRET = os.environ["SDD_ACCESS_TOKEN_SECRET"]
-filepath = os.environ["SDD_FILE_PATH"]
-twitter.authentication(CONSUMER_KEY, CONSUMER_SECRET,
-                       ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+consumerKey = os.environ["sddConsumerKey"]
+consumerSecret = os.environ["sddConsumerSecret"]
+accessToken = os.environ["sddAccessToken"]
+accessTokenSecret = os.environ["sddAccessTokenSecret"]
+filePath = os.environ["sddFilePath"]
+twitter.authentication(consumerKey, consumerSecret,
+                       accessToken, accessTokenSecret)
 query = "#bwbchess"
 api = twitter.authentication(
-    CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+    consumerKey, consumerSecret, accessToken, accessTokenSecret)
 # Search for tweets containing the hashtag #bwbchess
-searchmoves = twitter.search(api, query)
+searchMoves = twitter.search(api, query)
 # Pretty print the response into a file. Mainly used just for me to figure out the JSON.
-twitter.open_file(filepath, searchmoves)
-jsonmoves = json.loads(json.dumps(searchmoves))
-user_mentions = jsonmoves["statuses"][0]["entities"]["user_mentions"][0]["screen_name"]
+twitter.openFile(filePath, searchMoves)
+jsonMoves = json.loads(json.dumps(searchMoves))
+userMentions = jsonMoves["statuses"][0]["entities"]["user_mentions"][0]["screen_name"]

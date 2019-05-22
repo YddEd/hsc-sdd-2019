@@ -35,6 +35,6 @@ json_tweet, move = search_for_move("#bwbchess")
 user_mentions = json_tweet["statuses"][0]["entities"]["user_mentions"][0]["screen_name"]
 
 if user_mentions == "bwbchess":
-    lichess.makeMove(game_id, move, lichess_token)
+    lichess.make_move(game_id, move, lichess_token)
 else:
     print("Something bad happened!")

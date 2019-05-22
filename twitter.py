@@ -1,24 +1,26 @@
 import tweepy
+from tweepy import OAuthHandler
 import json
 from pathlib import Path
 
 
-def openFile(filePath, searchMoves):
-    fileFolder = Path(filePath)
-    f = open(fileFolder, "w")
+def open_file(file_path, search_moves):
+    file_folder = Path(file_path)
+    f = open(file_folder, "w")
     with f as outfile:
-        json.dump(searchMoves, outfile, indent=4)
+        json.dump(search_moves, outfile, indent=4)
     f.close()
 
 
 # Twitter authentication with Tweepy
-def authentication(consumerKey, consumerSecret, accessToken, accessTokenSecret):
-    auth = tweepy.OAuthHandler(consumerKey, consumerSecret)
-    auth.set_access_token(accessToken, accessTokenSecret)
+def authentication(consumer_key, consumer_secret, access_token, access_token_secret):
+    auth = OAuthHandler(consumer_key, consumer_secret)
+    auth.secure = True
+    auth.set_access_token(access_token, access_token_secret)
     api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
     return api
 
 
 def search(api, query):  # Search for a tweet with a specific query
-    searchMoves = api.search(q=query, count=100)
-    return searchMoves
+    search_moves = api.search(q=query, count=100)
+    return search_moves

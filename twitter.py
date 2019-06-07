@@ -1,10 +1,21 @@
 import tweepy
 from tweepy import OAuthHandler
+from tweepy.streaming import StreamListener
+from tweepy import Stream
 import json
 from pathlib import Path
 
 
-def open_file(file_path, search_moves):
+class myStreamListener(StreamListener):  # Stream listener to check for tweets
+    def onStatus(self, status):
+        print(status)
+        return True
+
+    def onError(self, status):
+        print(status)
+
+
+def open_file(file_path, search_moves):  # Write json to a file
     file_folder = Path(file_path)
     f = open(file_folder, "w")
     with f as outfile:

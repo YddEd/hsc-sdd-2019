@@ -20,7 +20,7 @@ api = twitter.authentication(
 # twitter.openFile(file_path, searchMoves)
 
 
-def get_move(json_tweet):  # Search for tweets containing the hashtag #bwbchess
+def get_move(json_tweet):  # Split the tweet to get the move
     try:
         str_tweet = json_tweet["statuses"][0]["text"]
         split_tweet = str_tweet.split(" ")
@@ -64,4 +64,4 @@ if get_move(tweet_data) != False:
     game_id = lichess.get_game_id(lichess_token)
     make_move()
 else:
-    print("Game, move and user mention not found!")
+print("Game, move and user mention not found!")

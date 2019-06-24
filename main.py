@@ -4,19 +4,7 @@ from tweepy import Stream
 from tweepy import StreamListener
 import json
 import os
-
-
-# Tokens go here, I'm using environment variables for mine
-consumer_key = os.environ["sddConsumerKey"]
-consumer_secret = os.environ["sddConsumerSecret"]
-access_token = os.environ["sddAccessToken"]
-access_token_secret = os.environ["sddAccessTokenSecret"]
-lichess_token = os.environ["sddChessToken"]
-file_path = os.environ["sddFilePath"]
-
-auth = twitter.authentication(consumer_key, consumer_secret)
-api = twitter.api(auth, access_token, access_token_secret)
-query = "bwbchess"
+import credentials
 
 
 def get_move(json_tweet):  # Split the tweet to get the move
@@ -57,6 +45,11 @@ def make_move():
 
 
 if __name__ == "__main__":
-    listener = twitter.myStreamListener()
-    stream = Stream(auth, listener)
-    stream.filter(track=[query])
+    # Tokens go here, I'm using environment variables for mine
+    lichess_token = credentials.lichess_token
+    file_path = os.environ["sddFilePath"]
+    query_list = ["bwbchess"]
+    fetched_tweets_filename = "tweets.json"
+
+    twitter_streamer = twitter.twitter_streamer()
+    twitter_streamer.stream_tweets(fetched_tweets_filename, query_list)

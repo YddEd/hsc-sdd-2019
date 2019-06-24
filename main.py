@@ -1,9 +1,10 @@
 import twitter
 import lichess
-import tweepy
 from tweepy import Stream
+from tweepy import StreamListener
 import json
 import os
+
 
 # Tokens go here, I'm using environment variables for mine
 consumer_key = os.environ["sddConsumerKey"]
@@ -13,11 +14,9 @@ access_token_secret = os.environ["sddAccessTokenSecret"]
 lichess_token = os.environ["sddChessToken"]
 file_path = os.environ["sddFilePath"]
 
-api = twitter.authentication(
-    consumer_key, consumer_secret, access_token, access_token_secret)
-
-# Pretty print the response into a file. Mainly used just for me to figure out the JSON.
-# twitter.openFile(file_path, searchMoves)
+auth = twitter.authentication(consumer_key, consumer_secret)
+api = twitter.api(auth, access_token, access_token_secret)
+query = "bwbchess"
 
 
 def get_move(json_tweet):  # Split the tweet to get the move
@@ -57,11 +56,7 @@ def make_move():
         print("Something bad happened and a move was not made!")
 
 
-tweet_data = tweet_query("#bwbchess")
-if get_move(tweet_data) != False:
-    move = get_move(tweet_data)
-    user_mention = user_mentions(tweet_data)
-    game_id = lichess.get_game_id(lichess_token)
-    make_move()
-else:
-    print("Game, move and user mention not found!")
+if __name__ == "__main__":
+    listener = twitter.myStreamListener()
+    stream = Stream(auth, listener)
+    stream.filter(track=[query])

@@ -4,11 +4,37 @@ from tweepy.streaming import StreamListener
 from tweepy import Stream
 import json
 from pathlib import Path
+import credentials
 
 
-class myStreamListener(StreamListener):  # Stream listener to check for tweets
+class twitter_streamer():
+    """
+    Class for streaming and processing live tweets.
+    """
+
+    def stream_tweets(self, fetched_tweets_filename, query_list):
+        # Handles Authentication and connection to Twitter and their Streaming API
+        listener = myStreamListener(fetched_tweets_filename)
+        stream = Stream(auth, listener)
+        stream.filter(track=query_list)  # Filter tweets based on keywords
+
+
+class myStreamListener(StreamListener):
+    """
+    Stream listener to check for and print tweets
+    """
+
+    def __init__(self, fetched_tweets_filename):
+        self.fetched_tweets_filename = fetched_tweets_filename
+
     def on_data(self, data):
-        print(data)
+        try:
+            print(data)
+            with open(self.fetched_tweets_filename, "a") as outfile:
+                json.dump(json.loads(data), outfile, indent=4)
+            return True
+        except BaseException as e:
+            print(f"Error on_data {str(e)}")
         return True
 
     def on_error(self, status):
@@ -39,3 +65,7 @@ def api(auth, access_token, access_token_secret):
 def search(api, query):  # Search for a tweet with a specific query
     search_moves = api.search(q=query, count=100)
     return search_moves
+
+
+auth = authentication(credentials.consumer_key, credentials.consumer_secret)
+api = api(auth, credentials.access_token, credentials.access_token_secret)

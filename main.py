@@ -7,6 +7,66 @@ import os
 import credentials
 
 
+class twitter_streamer():
+    """
+    Class for streaming and processing live tweets.
+    """
+
+    def stream_tweets(self, fetched_tweets_filename, query_list):
+        # Handles Authentication and connection to Twitter and their Streaming API
+        listener = twitter_listener(fetched_tweets_filename)
+        stream = Stream(auth, listener)
+        stream.filter(track=query_list)  # Filter tweets based on keywords
+
+
+class twitter_listener(StreamListener):
+    """
+    Stream listener to check for and print tweets
+    """
+
+    def __init__(self, fetched_tweets_filename):
+        self.fetched_tweets_filename = fetched_tweets_filename
+
+    def on_data(self, data):
+        try:
+            tweet = json.loads(data)
+            with open(self.fetched_tweets_filename, "a") as outfile:
+                json.dump(tweet, outfile, indent=4)
+            print(tweet["text"])
+            # manipulate_tweet(tweet)
+            move, user_mentions = manipulate_tweet(tweet)
+            game_id = lichess.get_game_id(lichess_token)
+            print(game_id)
+            make_move(user_mentions, game_id, move)
+            return True
+        except BaseException as e:
+            print(f"Error on_data {str(e)}")
+        return True
+
+    def on_error(self, status):
+        print(status)
+        if status == 420:
+            return False
+
+
+def manipulate_tweet(tweet):
+    str_tweet = tweet["text"]
+    try:
+        split_tweet = str_tweet.split(" ")
+        move = str(split_tweet[-1])
+        print(f"Move is {move}")
+    except IndexError:
+        print("Move not found!")
+        return False
+    try:
+        user_mentions = tweet["entities"]["user_mentions"][0]["screen_name"]
+    except IndexError:
+        print("No user mentions")
+        return False
+    return move, user_mentions
+
+
+'''
 def get_move(json_tweet):  # Split the tweet to get the move
     try:
         str_tweet = json_tweet["statuses"][0]["text"]
@@ -16,14 +76,16 @@ def get_move(json_tweet):  # Split the tweet to get the move
     except IndexError:
         print("Move not found!")
         return False
+'''
 
-
+'''
 def tweet_query(query):
     latest_tweet = twitter.search(api, query)
     json_tweet = json.loads(json.dumps(latest_tweet))
     return json_tweet
+'''
 
-
+'''
 def user_mentions(tweet_data):
     try:  # Get the first mention in the tweet
         print(f"Move is: {move}")
@@ -33,14 +95,15 @@ def user_mentions(tweet_data):
     except IndexError:
         print("No user mentions")
         return False
+'''
 
 
-def make_move():
-    if user_mention == "bwbchess":
+def make_move(user_mentions, game_id, move):
+    if user_mentions == "bwbchess":
         print("Correct user mention")
         lichess.make_move(game_id, move, lichess_token)
     else:
-        print(user_mention)
+        print(user_mentions)
         print("Something bad happened and a move was not made!")
 
 
@@ -50,6 +113,9 @@ if __name__ == "__main__":
     file_path = os.environ["sddFilePath"]
     query_list = ["bwbchess"]
     fetched_tweets_filename = "tweets.json"
-
-    twitter_streamer = twitter.twitter_streamer()
-    twitter_streamer.stream_tweets(fetched_tweets_filename, query_list)
+    auth = twitter.authentication(credentials.consumer_key,
+                                  credentials.consumer_secret)
+    api = twitter.api(auth, credentials.access_token,
+                      credentials.access_token_secret)
+twitter_streamer = twitter_streamer()
+twitter_streamer.stream_tweets(fetched_tweets_filename, query_list)

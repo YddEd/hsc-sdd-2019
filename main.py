@@ -32,11 +32,8 @@ class twitter_listener(StreamListener):
             tweet = json.loads(data)
             with open(self.fetched_tweets_filename, "a") as outfile:
                 json.dump(tweet, outfile, indent=4)
-            print(tweet["text"])
-            # manipulate_tweet(tweet)
             move, user_mentions = manipulate_tweet(tweet)
             game_id = lichess.get_game_id(lichess_token)
-            print(game_id)
             make_move(user_mentions, game_id, move)
             return True
         except BaseException as e:
@@ -66,56 +63,23 @@ def manipulate_tweet(tweet):
     return move, user_mentions
 
 
-'''
-def get_move(json_tweet):  # Split the tweet to get the move
-    try:
-        str_tweet = json_tweet["statuses"][0]["text"]
-        split_tweet = str_tweet.split(" ")
-        move = str(split_tweet[-1])
-        return move
-    except IndexError:
-        print("Move not found!")
-        return False
-'''
-
-'''
-def tweet_query(query):
-    latest_tweet = twitter.search(api, query)
-    json_tweet = json.loads(json.dumps(latest_tweet))
-    return json_tweet
-'''
-
-'''
-def user_mentions(tweet_data):
-    try:  # Get the first mention in the tweet
-        print(f"Move is: {move}")
-        user_mentions = tweet_data["statuses"][0]["entities"]["user_mentions"][0]["screen_name"]
-        print(f"User mention is: {user_mentions}")
-        return user_mentions
-    except IndexError:
-        print("No user mentions")
-        return False
-'''
-
 
 def make_move(user_mentions, game_id, move):
     if user_mentions == "bwbchess":
         print("Correct user mention")
         lichess.make_move(game_id, move, lichess_token)
     else:
-        print(user_mentions)
         print("Something bad happened and a move was not made!")
 
 
 if __name__ == "__main__":
     # Tokens go here, I'm using environment variables for mine
     lichess_token = credentials.lichess_token
-    file_path = os.environ["sddFilePath"]
     query_list = ["bwbchess"]
     fetched_tweets_filename = "tweets.json"
     auth = twitter.authentication(credentials.consumer_key,
                                   credentials.consumer_secret)
     api = twitter.api(auth, credentials.access_token,
                       credentials.access_token_secret)
-twitter_streamer = twitter_streamer()
-twitter_streamer.stream_tweets(fetched_tweets_filename, query_list)
+    twitter_streamer = twitter_streamer()
+    twitter_streamer.stream_tweets(fetched_tweets_filename, query_list)

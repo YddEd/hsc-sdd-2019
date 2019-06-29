@@ -6,14 +6,6 @@ import json
 from pathlib import Path
 
 
-def open_file(file_path, search_moves):  # Write json to a file
-    file_folder = Path(file_path)
-    f = open(file_folder, "w")
-    with f as outfile:
-        json.dump(search_moves, outfile, indent=4)
-    f.close()
-
-
 def authentication(consumer_key, consumer_secret):  # Twitter authentication with Tweepy
     auth = OAuthHandler(consumer_key, consumer_secret)
     return auth

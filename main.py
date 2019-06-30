@@ -32,8 +32,9 @@ class twitter_listener(StreamListener):
             tweet = json.loads(data)
             with open(self.fetched_tweets_filename, "a") as outfile:
                 json.dump(tweet, outfile, indent=4)
-            move, user_mentions = manipulate_tweet(tweet)
             game_id = lichess.get_game_id(lichess_token)
+            user_mentions = get_user_mentions(tweet) 
+            move = get_move(tweet)
             make_move(user_mentions, game_id, move)
             return True
         except BaseException as e:
@@ -46,22 +47,25 @@ class twitter_listener(StreamListener):
             return False
 
 
-def manipulate_tweet(tweet):
+def get_move(tweet):
     str_tweet = tweet["text"]
     try:
         split_tweet = str_tweet.split(" ")
         move = str(split_tweet[-1])
         print(f"Move is {move}")
+        return move
     except IndexError:
         print("Move not found!")
         return False
+
+def get_user_mentions(tweet):
     try:
         user_mentions = tweet["entities"]["user_mentions"][0]["screen_name"]
+        print(f"User mention: {user_mentions}")
+        return user_mentions
     except IndexError:
         print("No user mentions")
         return False
-    return move, user_mentions
-
 
 
 def make_move(user_mentions, game_id, move):

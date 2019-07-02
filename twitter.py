@@ -16,8 +16,3 @@ def api(auth, access_token, access_token_secret):
     auth.set_access_token(access_token, access_token_secret)
     api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())
     return api
-
-
-def search(api, query):  # Search for a tweet with a specific query
-    search_moves = api.search(q=query, count=100)
-    return search_moves

@@ -32,15 +32,14 @@ class twitter_listener(StreamListener):
             tweet = json.loads(data)
             with open(self.fetched_tweets_filename, "a") as outfile:
                 json.dump(tweet, outfile, indent=4)
-            game_id = lichess.get_game_id(lichess_token)
-            user_mentions = get_user_mentions(tweet) 
+            user_mentions = get_user_mentions(tweet)
             move = get_move(tweet)
-            make_move(user_mentions, game_id, move)
+            game_id = lichess.get_game_id(lichess_token)
+            make_move(user_mentions, tweet, game_id, move)        
             return True
         except BaseException as e:
             print(f"Error on_data {str(e)}")
         return True
-
     def on_error(self, status):
         print(status)
         if status == 420:
@@ -58,6 +57,17 @@ def get_move(tweet):
         print("Move not found!")
         return False
 
+def verify_last_move(tweet):
+    str_tweet = tweet["text"]
+    try:
+        split_tweet = str_tweet.split(" ")
+        last_move = str(split_tweet[-2])
+        print(f"User says the computer's last move is: {last_move}")
+        return last_move
+    except IndexError:
+        print("Move not found!")
+        return False
+
 def get_user_mentions(tweet):
     try:
         user_mentions = tweet["entities"]["user_mentions"][0]["screen_name"]
@@ -67,11 +77,13 @@ def get_user_mentions(tweet):
         print("No user mentions")
         return False
 
-
-def make_move(user_mentions, game_id, move):
+def make_move(user_mentions, tweet,  game_id, move):
     if user_mentions == "bwbchess":
         print("Correct user mention")
-        lichess.make_move(game_id, move, lichess_token)
+        if verify_last_move(tweet) == lichess.game_state(game_id, lichess_token).lower():
+            lichess.make_move(game_id, move, lichess_token)
+        else:
+            print("User has not input the correct computer move")
     else:
         print("Something bad happened and a move was not made!")
 

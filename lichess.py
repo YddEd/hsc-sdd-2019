@@ -14,6 +14,29 @@ def get_game_id(lichess_token):
     return game_id
 
 
+def game_state(game_id, lichess_token):
+    url = f"https://lichess.org//api/bot/game/stream/{game_id}"
+    headers = {"Authorization": f"Bearer {lichess_token}"}
+    game_state = requests.get(url, headers=headers, stream=True)
+    for line in game_state.iter_lines(decode_unicode=True):
+        if line:
+            if get_previous_move(line) != True:
+                return (get_previous_move(line))
+
+
+
+def get_previous_move(line):
+    try:
+        game_moves = json.loads(line)["state"]["moves"]
+    except KeyError: # After program is run, the API will return "gameState" which does not have key "state"
+        game_moves = json.loads(line)["moves"]
+    game_moves = game_moves.split(" ")
+    if len(game_moves) % 2 == 0:
+        return game_moves[-1] # This is the last move in list of moves 
+    else:
+        return "none"
+
+
 def make_move(game_id, move, lichess_token):
     url = f"https://lichess.org//api/bot/game/{game_id}/move/{move}"
     headers = {"Authorization": f"Bearer {lichess_token}"}

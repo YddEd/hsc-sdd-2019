@@ -27,26 +27,25 @@ class twitter_listener(StreamListener):
     def __init__(self, fetched_tweets_filename):
         self.fetched_tweets_filename = fetched_tweets_filename
 
-    def on_data(self, data):
+    def on_data(self, data):  # Runs every time a tweet is found
         try:
             tweet = json.loads(data)
-            with open(self.fetched_tweets_filename, "a") as outfile:
-                json.dump(tweet, outfile, indent=4)
             user_mentions = get_user_mentions(tweet)
             move = get_move(tweet)
             game_id = lichess.get_game_id(lichess_token)
-            make_move(user_mentions, tweet, game_id, move)        
+            make_move(user_mentions, tweet, game_id, move)
             return True
         except BaseException as e:
             print(f"Error on_data {str(e)}")
         return True
+
     def on_error(self, status):
         print(status)
         if status == 420:
             return False
 
 
-def get_move(tweet):
+def get_move(tweet):  # Gets chess move from the tweet
     str_tweet = tweet["text"]
     try:
         split_tweet = str_tweet.split(" ")
@@ -55,9 +54,9 @@ def get_move(tweet):
         return move
     except IndexError:
         print("Move not found!")
-        return False
 
-def verify_last_move(tweet):
+
+def verify_last_move(tweet):  # Gets the user's input to check if
     str_tweet = tweet["text"]
     try:
         split_tweet = str_tweet.split(" ")
@@ -66,18 +65,18 @@ def verify_last_move(tweet):
         return last_move
     except IndexError:
         print("Move not found!")
-        return False
 
-def get_user_mentions(tweet):
+
+def get_user_mentions(tweet):  # Gets the first user mention from the tweet
     try:
         user_mentions = tweet["entities"]["user_mentions"][0]["screen_name"]
         print(f"User mention: {user_mentions}")
         return user_mentions
     except IndexError:
         print("No user mentions")
-        return False
 
-def make_move(user_mentions, tweet,  game_id, move):
+
+def make_move(user_mentions, tweet,  game_id, move):  # Sends the move to be made to lichess
     if user_mentions == "bwbchess":
         print("Correct user mention")
         if verify_last_move(tweet) == lichess.game_state(game_id, lichess_token).lower():

@@ -11,7 +11,7 @@ def authentication(consumer_key, consumer_secret):  # Twitter authentication wit
     return auth
 
 
-def api(auth, access_token, access_token_secret):
+def api(auth, access_token, access_token_secret):  # API authenticaiton
     auth.secure = True
     auth.set_access_token(access_token, access_token_secret)
     api = tweepy.API(auth, parser=tweepy.parsers.JSONParser())

@@ -84,7 +84,7 @@ def make_move(user_mentions, tweet,  game_id, move):  # Sends the move to be mad
         else:
             print("User has not input the correct computer move")
     else:
-        print("Something bad happened and a move was not made!")
+        print("User did not mention bwbchess")
 
 
 if __name__ == "__main__":

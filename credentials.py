@@ -1,10 +1,8 @@
-import os
-
 # Twitter credentials
-consumer_key = os.environ["sddConsumerKey"]
-consumer_secret = os.environ["sddConsumerSecret"]
-access_token = os.environ["sddAccessToken"]
-access_token_secret = os.environ["sddAccessTokenSecret"]
+consumer_key = #YOUR TOKEN HERE
+consumer_secret = #YOUR TOKEN HERE
+access_token = #YOUR TOKEN HERE
+access_token_secret = #YOUR TOKEN HERE
 
 # Lichess credentials
-lichess_token = os.environ["sddChessToken"]
+lichess_token = #YOUR TOKEN HERE
